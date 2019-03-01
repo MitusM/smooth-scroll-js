@@ -1,11 +1,16 @@
-/* global J, define, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError */ ;
+/* global J, exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError */
 (function () {
   'use strict'
   let fixedHeader
   let headerHeight
   let animationInterval
-  /** Массив из одноуровневых элементов, если их нет то [] @param {Array} */
+
+  /** 
+   * Массив из одноуровневых элементов, если их нет то [] 
+   * @param {Array} 
+   * */
   let siblingNavigation = null
+
   /** родительский элемент внутри которого происходит поиск одноуровневых соседей элемента, или его родителя */
   let parentElement = null
 
@@ -504,17 +509,6 @@
     el.addEventListener('click', clickFunc)
   }
 
-  /**
-   * Попал ли элемент в просматриваемую область
-   * @param {HTMLElement} el - The element to apply scroll to
-   * @private
-   */
-  let elementInViewPort = (el) => {
-    var rect = getBoundingClientRect(el)
-    return (
-      rect.top >= 0 && rect.left >= 0 && rect.top <= viewportHeight
-    )
-  }
 
   /**
    * Возвращает набор одноуровневых элементов
@@ -524,7 +518,7 @@
   function siblings(element) {
     let ele = element.parentNode
     let children = ArrayProtoSlice.call(ele.children)
-    return children.filter((child, i) => {
+    return children.filter((child) => {
       return child !== element
     })
   }
@@ -817,7 +811,6 @@
       // let arrlength
       let init = initArguments(settings, fn)
       let arr = isArray(selector) ? selector : $$(selector)
-      let options = init.options
       let positions = arr.map(elem => {
         let rect = getBoundingClientRect(elem)
         return {
@@ -902,6 +895,7 @@
     // Common JS
   } else if (typeof exports !== 'undefined' && !exports.nodeType) {
     if (typeof module !== 'undefined' && !module.nodeType && module.exports) {
+      // eslint-disable-next-line no-global-assign
       exports = module.exports = Scroll
     }
     exports.default = Scroll
