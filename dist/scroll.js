@@ -40,16 +40,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
   return r;
 })()({
   1: [function (require, module, exports) {
-    /* global J, define, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError */
-    ;
-
+    /* global J, exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError */
     (function () {
       'use strict';
 
       var fixedHeader;
       var headerHeight;
       var animationInterval;
-      /** Массив из одноуровневых элементов, если их нет то [] @param {Array} */
+      /**
+       * Массив из одноуровневых элементов, если их нет то []
+       * @param {Array}
+       * */
 
       var siblingNavigation = null;
       /** родительский элемент внутри которого происходит поиск одноуровневых соседей элемента, или его родителя */
@@ -581,17 +582,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         el.addEventListener('click', clickFunc);
       };
       /**
-       * Попал ли элемент в просматриваемую область
-       * @param {HTMLElement} el - The element to apply scroll to
-       * @private
-       */
-
-
-      var elementInViewPort = function elementInViewPort(el) {
-        var rect = getBoundingClientRect(el);
-        return rect.top >= 0 && rect.left >= 0 && rect.top <= viewportHeight;
-      };
-      /**
        * Возвращает набор одноуровневых элементов
        * @param   {object} element элемент соседей которого находим
        * @returns {Array}  массив в который не входит сам элемент, только одноуровневые элементы
@@ -601,7 +591,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       function siblings(element) {
         var ele = element.parentNode;
         var children = ArrayProtoSlice.call(ele.children);
-        return children.filter(function (child, i) {
+        return children.filter(function (child) {
           return child !== element;
         });
       }
@@ -933,7 +923,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             // let arrlength
             var init = initArguments(settings, fn);
             var arr = isArray(selector) ? selector : $$(selector);
-            var options = init.options;
             var positions = arr.map(function (elem) {
               var rect = getBoundingClientRect(elem);
               return {
@@ -1046,6 +1035,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }); // Common JS
       } else if (typeof exports !== 'undefined' && !exports.nodeType) {
         if (typeof module !== 'undefined' && !module.nodeType && module.exports) {
+          // eslint-disable-next-line no-global-assign
           exports = module.exports = Scroll;
         }
 

@@ -1,24 +1,42 @@
+/* eslint-disable no-undef */
 module.exports = function (grunt) {
-  require('load-grunt-tasks')(grunt)
-  const sass = require('node-sass')
+  require("load-grunt-tasks")(grunt);
+  const sass = require("node-sass");
   let config = {
     browserify: {
       dist: {
         files: {
-          'temp/index.js': ['src/index.js']
-        }
-      }
+          "temp/index.js": ["src/index.js"],
+        },
+      },
+    },
+    concat: {
+      options: {
+        separator: ";",
+      },
+      temp: {
+        options: {
+          sourceMap: false,
+        },
+        src: [
+          "src/var.js",
+          "src/getViewportAndElementSizes.js",
+          "src/escapecharacters.js",
+          "src/index.js"
+        ],
+        dest: "temp/index.js",
+      },
     },
     babel: {
       options: {
         sourceMap: false,
-        presets: ['@babel/preset-env']
+        presets: ["@babel/preset-env"],
       },
       dist: {
         files: {
-          'dist/scroll.js': ['temp/index.js']
-        }
-      }
+          "dist/scroll.js": ["temp/index.js"],
+        },
+      },
     },
     sass: {
       // Task
@@ -26,12 +44,12 @@ module.exports = function (grunt) {
         // Target options
         options: {
           implementation: sass,
-          sourceMap: false
+          sourceMap: false,
         },
         files: {
-          'dist/css/scroll.css': 'sass/index.scss'
-        }
-      }
+          "dist/css/scroll.css": "sass/index.scss",
+        },
+      },
       // min: {
       //   options: {
       //     outputStyle: 'compressed',
@@ -51,52 +69,52 @@ module.exports = function (grunt) {
       },
       dist: {
         files: {
-          'dist/scroll.min.js': ['dist/scroll.js']
-        }
-      }
+          "dist/scroll.min.js": ["dist/scroll.js"],
+        },
+      },
     },
     //  Clean
     clean: {
       temp: {
-        src: ['temp/']
-      }
+        src: ["temp/"],
+      },
     },
     watch: {
       js: {
-        files: ['src/**/*'],
-        tasks: ['js_compile'],
+        files: ["src/**/*"],
+        tasks: ["js_compile"],
         options: {
           interrupt: false,
-          spawn: false
-        }
+          spawn: false,
+        },
       },
       sass: {
-        files: ['sass/**/*'],
-        tasks: ['sass_compile'],
+        files: ["sass/**/*"],
+        tasks: ["sass_compile"],
         options: {
           interrupt: false,
-          spawn: false
-        }
-      }
+          spawn: false,
+        },
+      },
     },
     // PostCss Autoprefixer
     postcss: {
       options: {
         processors: [
-          require('autoprefixer')({
+          require("autoprefixer")({
             browsers: [
-              'last 2 versions',
-              'Chrome >= 30',
-              'Firefox >= 30',
-              'ie >= 10',
-              'Safari >= 8'
-            ]
-          })
-        ]
+              "last 2 versions",
+              "Chrome >= 30",
+              "Firefox >= 30",
+              "ie >= 10",
+              "Safari >= 8",
+            ],
+          }),
+        ],
       },
       expanded: {
-        src: 'dist/css/scroll.css'
-      }
+        src: "dist/css/scroll.css",
+      },
       // min: {
       //   src: 'dist/css/scroll.min.css'
       // }
@@ -105,39 +123,45 @@ module.exports = function (grunt) {
       watching: {
         options: {
           enabled: true,
-          message: 'Watching Files!',
-          title: 'jump-scroll', // defaults to the name in package.json, or will use project directory's name
+          message: "Watching Files!",
+          title: "jump-scroll", // defaults to the name in package.json, or will use project directory's name
           success: true, // whether successful grunt executions should be notified automatically
-          duration: 1 // the duration of notification in seconds, for `notify-send only
-        }
+          duration: 1, // the duration of notification in seconds, for `notify-send only
+        },
       },
       sass_compile: {
         options: {
           enabled: true,
-          message: 'Sass Compiled!',
-          title: 'Task Complete',
+          message: "Sass Compiled!",
+          title: "Task Complete",
           success: true,
-          duration: 1
-        }
+          duration: 1,
+        },
       },
       js_compile: {
         options: {
           enabled: true,
-          title: 'Task Complete', // optional
-          message: 'JS and Uglify finished running',
+          title: "Task Complete", // optional
+          message: "JS and Uglify finished running",
           success: true,
-          duration: 1
-        }
-      }
-    }
-  }
-  grunt.initConfig(config)
-  grunt.registerTask('default', ['babel'])
-  grunt.registerTask('js_compile', ['browserify:dist', 'babel:dist', 'uglify:dist', 'notify:js_compile', 'clean:temp'])
-  grunt.registerTask('sass_compile', [
-    'sass:dist',
+          duration: 1,
+        },
+      },
+    },
+  };
+  grunt.initConfig(config);
+  grunt.registerTask("default", ["babel"]); // "concat:temp",
+  grunt.registerTask("js_compile", [
+    'browserify:dist',
+    "babel:dist",
+    "uglify:dist",
+    "notify:js_compile",
+    "clean:temp",
+  ]);
+  grunt.registerTask("sass_compile", [
+    "sass:dist",
     // 'sass:min',
-    'postcss:expanded'
+    "postcss:expanded",
     // 'postcss:min'
-  ])
-}
+  ]);
+};

@@ -1,6 +1,18 @@
+<<<<<<< Updated upstream
 /* global J, exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError */
+=======
+/* global exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError*/
+/* eslint-disable no-console */
+>>>>>>> Stashed changes
 (function () {
   'use strict'
+
+  // let escapeCharacters = require('./escapecharacters');
+  // let v = require('./var')
+  // console.log('v', v)
+  // let size = require('./getViewportAndElementSizes')
+  // let getViewportAndElementSizes = size.getViewportAndElementSizes
+  // let getHeight = size.getHeight
   let fixedHeader
   let headerHeight
   let animationInterval
@@ -14,7 +26,6 @@
   /** родительский элемент внутри которого происходит поиск одноуровневых соседей элемента, или его родителя */
   let parentElement = null
 
-  // let bottomButton
   /** @param {HTMLElement} document */
   let doc = document
   /** @param {HTMLElement} window */
@@ -30,7 +41,6 @@
   /** Default settings */
   let settings = {
     // Selectors
-    // ignore: '[data-scroll-ignore]',
     header: null,
     topOnEmptyHash: true,
 
@@ -133,12 +143,6 @@
 
   let eventScroll = (fn) => doc.addEventListener('scroll', fn)
 
-  /**
-   * Escape special characters for use with querySelector
-   * @author Mathias Bynens
-   * @link https://github.com/mathiasbynens/CSS.escape
-   * @param {String} id The anchor ID to escape
-   */
   var escapeCharacters = function (id) {
     // Remove leading hash
     if (id.charAt(0) === '#') {
@@ -677,14 +681,14 @@
   class Scroll {
     constructor() {
       this._el = body
-      let div = createElement({
+      this._button = createElement({
         element: 'div',
         className: settings.buttonClass
       })
-      this._button = div
     }
 
     /**
+     * Показывает текущюю позицию на экране
      * Gets the current scroll position of the scroll container.
      * @returns {number}
      */
@@ -692,12 +696,18 @@
       return body.scrollTop || docElement.scrollTop
     }
 
-    /** Размеры просматриваемой области page */
+    /**
+     * Размеры просматриваемой области page
+     * @returns {number}
+     */
     get viewPort() {
       return getViewportAndElementSizes().view
     }
 
-    /** размер страницы */
+    /**
+     * размер страницы
+     * @returns {number}
+     */
     get page() {
       return getViewportAndElementSizes().size
     }
@@ -872,21 +882,21 @@
     }
   }
 
-  if (J) {
-    J.Scroll = Scroll
-    // J.requestAnimationFrame = requestAnimationFrame
-    // J.domRect = getBoundingClientRect
-    // J.viewHeight = viewportHeight
-    // J.heightBody = heightBody
-    // J.elementInViewport = elementInViewport
-    if (J.jQueryLoaded) {
-      J.initializeJqueryWrapper(
-        Scroll,
-        'actionScroll',
-        'J_Scroll'
-      )
-    }
-  }
+
+  // if (J) {
+  //   J.Scroll = Scroll
+  //   if (J.jQueryLoaded) {
+  //     J.initializeJqueryWrapper(
+  //       Scroll,
+  //       'actionScroll',
+  //       'J_Scroll'
+  //     )
+  //   }
+  // } else {
+  //   window.Scroll = Scroll
+  // }
+
+  window.Scroll = Scroll
 
   if (typeof define === 'function' && define.amd) {
     define('Scroll', [], function () {
