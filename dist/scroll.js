@@ -40,43 +40,23 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
   return r;
 })()({
   1: [function (require, module, exports) {
-    /* global J, exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError */
+    /* global exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError*/
     (function () {
       'use strict';
 
       var fixedHeader;
       var headerHeight;
       var animationInterval;
-      /**
-       * Массив из одноуровневых элементов, если их нет то []
-       * @param {Array}
-       * */
-
       var siblingNavigation = null;
-      /** родительский элемент внутри которого происходит поиск одноуровневых соседей элемента, или его родителя */
-
-      var parentElement = null; // let bottomButton
-
-      /** @param {HTMLElement} document */
-
+      var parentElement = null;
       var doc = document;
-      /** @param {HTMLElement} window */
-
       var win = window;
-      /**
-       * @param {HTMLElement} document.body
-       * @private
-       */
-
       var body = doc.body;
-      /** @param {HTMLElement} document.documentElement */
-
       var docElement = doc.documentElement;
       /** Default settings */
 
       var settings = {
         // Selectors
-        // ignore: '[data-scroll-ignore]',
         header: null,
         topOnEmptyHash: true,
         // Speed & Duration
@@ -103,13 +83,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         bottom: 100,
         // navigation
         navigation: 'bottom'
-        /**
-         * Находим элемент в DOM
-         * @param {String} name имя id
-         * @private
-         */
-        // let Id = (name) => doc.getElementById(name)
-
       };
 
       var qerySelector = function qerySelector(name) {
@@ -119,10 +92,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       var floor = Math.floor;
       var max = Math.max;
       var min = Math.min;
-      /** @param {Array} Array.prototype.slice */
-
       var ArrayProtoSlice = Array.prototype.slice;
-      /** document.querySelectorAll */
 
       var $$ = function $$(selector) {
         return ArrayProtoSlice.call(!selector ? [] : doc.querySelectorAll(selector));
@@ -139,23 +109,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       var requestAnimationFrameShim = function requestAnimationFrameShim(callback) {
         win.setTimeout(callback, 1000 / 60);
       };
-      /**
-       * [[Description]]
-       * @param {[[Type]]} callback [[Description]]
-       */
-
 
       var requestAnimationFrame = function requestAnimationFrame(callback) {
         var requestFn = win.requestAnimationFrame || win.mozRequestAnimationFrame || win.webkitRequestAnimationFrame || requestAnimationFrameShim;
         requestFn.call(win, callback);
       };
-      /**
-       * Объединяем два или больше объектов вместе. Merge two or more objects together.
-       * @param   {Object}   objects  The objects to merge together
-       * @returns {Object}            Merged values of defaults and options
-       * @private
-       */
-
 
       var extend = function extend() {
         var merged = {};
@@ -182,16 +140,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       var eventScroll = function eventScroll(fn) {
         return doc.addEventListener('scroll', fn);
       };
-      /**
-       * Escape special characters for use with querySelector
-       * @author Mathias Bynens
-       * @link https://github.com/mathiasbynens/CSS.escape
-       * @param {String} id The anchor ID to escape
-       */
-
 
       var escapeCharacters = function escapeCharacters(id) {
-        // Remove leading hash
         if (id.charAt(0) === '#') {
           id = id.substr(1);
         }
@@ -204,81 +154,39 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         var firstCodeUnit = string.charCodeAt(0);
 
         while (++index < length) {
-          codeUnit = string.charCodeAt(index); // Note: thereтАЩs no need to special-case astral symbols, surrogate
-          // pairs, or lone surrogates.
-          // If the character is NULL (U+0000), then throw an
-          // `InvalidCharacterError` exception and terminate these steps.
+          codeUnit = string.charCodeAt(index);
 
           if (codeUnit === 0x0000) {
             throw new InvalidCharacterError('Invalid character: the input contains U+0000.');
           }
 
-          if ( // If the character is in the range [\1-\1F] (U+0001 to U+001F) or is
-          // U+007F, [тАж]
-          codeUnit >= 0x0001 && codeUnit <= 0x001F || codeUnit === 0x007F || // If the character is the first character and is in the range [0-9]
-          // (U+0030 to U+0039), [тАж]
-          index === 0 && codeUnit >= 0x0030 && codeUnit <= 0x0039 || // If the character is the second character and is in the range [0-9]
-          // (U+0030 to U+0039) and the first character is a `-` (U+002D), [тАж]
-          index === 1 && codeUnit >= 0x0030 && codeUnit <= 0x0039 && firstCodeUnit === 0x002D) {
-            // http://dev.w3.org/csswg/cssom/#escape-a-character-as-code-point
+          if (codeUnit >= 0x0001 && codeUnit <= 0x001F || codeUnit === 0x007F || index === 0 && codeUnit >= 0x0030 && codeUnit <= 0x0039 || index === 1 && codeUnit >= 0x0030 && codeUnit <= 0x0039 && firstCodeUnit === 0x002D) {
             result += '\\' + codeUnit.toString(16) + ' ';
             continue;
-          } // If the character is not handled by one of the above rules and is
-          // greater than or equal to U+0080, is `-` (U+002D) or `_` (U+005F), or
-          // is in one of the ranges [0-9] (U+0030 to U+0039), [A-Z] (U+0041 to
-          // U+005A), or [a-z] (U+0061 to U+007A), [тАж]
-
+          }
 
           if (codeUnit >= 0x0080 || codeUnit === 0x002D || codeUnit === 0x005F || codeUnit >= 0x0030 && codeUnit <= 0x0039 || codeUnit >= 0x0041 && codeUnit <= 0x005A || codeUnit >= 0x0061 && codeUnit <= 0x007A) {
-            // the character itself
             result += string.charAt(index);
             continue;
-          } // Otherwise, the escaped character.
-          // http://dev.w3.org/csswg/cssom/#escape-a-character
-
+          }
 
           result += '\\' + string.charAt(index);
-        } // Return sanitized hash
-
+        }
 
         return '#' + result;
       };
-      /**
-       * Проверяет является ли заданный элемент document.body или document.documentElement
-       * @param   {object}  el элемент
-       * @returns {boolean}
-       */
-
 
       var isRootContainer = function isRootContainer(el) {
         return el === docElement || el === body;
       };
-      /**
-       * Высота (height)
-       * @param   {object} el элемент
-       * @returns {number}
-       */
-
 
       var getHeight = function getHeight(el) {
         return max(el.scrollHeight, el.clientHeight, el.offsetHeight);
       };
-      /**
-       * Ширина (weight)
-       * @param   {object} el элемент
-       * @returns {number}
-       */
-
 
       var getWidth = function getWidth(el) {
         return max(el.scrollWidth, el.clientWidth, el.offsetWidth);
       };
-      /**
-       * Высота и ширина указанного элемента
-       * @param   {object} el элемент
-       * @returns {object} {width: ..., height: ...}
-       */
-
 
       var getSize = function getSize(el) {
         return {
@@ -286,55 +194,29 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           height: getHeight(el)
         };
       };
-      /**
-       * Получение высоты и ширины элемента. Если не задан элемент то получаем высоту и ширину просматриваемой области и высоту с шириной страницы
-       * @param   {object} el = document.body элемент. Если не задан то используется по умолчанию
-       * @returns {object} {view:  просматриваемая область экрана ,size: страница}, если элемент !== document.body или document.documentElement то view идентичен size . {view: width:height:},size:{width:height:}}
-       */
-
 
       var getViewportAndElementSizes = function getViewportAndElementSizes() {
         var el = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : body;
         var isRoot = isRootContainer(el);
         return {
-          /** Высота и ширина просматриваемой области */
           view: {
             width: isRoot ? min(win.innerWidth, docElement.clientWidth) : el.clientWidth,
             height: isRoot ? win.innerHeight : el.clientHeight
           },
-
-          /** размер страницы или элемента */
           size: isRoot ? {
             width: max(getWidth(body), getWidth(docElement)),
             height: max(getHeight(body), getHeight(docElement))
           } : getSize(el)
         };
       };
-      /**
-       *
-       * @param {HTMLElement} el элемент
-       * @private
-       */
-
 
       var getBoundingClientRect = function getBoundingClientRect(el) {
         return el.getBoundingClientRect();
       };
-      /** Высота области просмотра */
-
 
       var viewportHeight = getViewportAndElementSizes().view.height;
-      /** высота страницы */
-
       var heightBody = getViewportAndElementSizes().size.height;
-      /** верхняя позиция последнего просматриваемого экрана */
-
       var positionTopClient = heightBody - viewportHeight;
-      /**
-       * Get the height of the fixed header
-       * @param  {Node}   header The header
-       * @return {Number}        The height of the header
-       */
 
       var getHeaderHeight = function getHeaderHeight(header) {
         return !header ? 0 : getHeight(header) + header.offsetTop;
@@ -343,41 +225,25 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       var getEasing = function getEasing(settings, time) {
         var pattern; // Default Easing Patterns
 
-        if (settings.easing === 'easeInQuad') pattern = time * time; // accelerating from zero velocity
-
-        if (settings.easing === 'easeOutQuad') pattern = time * (2 - time); // decelerating to zero velocity
-
-        if (settings.easing === 'easeInOutQuad') pattern = time < 0.5 ? 2 * time * time : -1 + (4 - 2 * time) * time; // acceleration until halfway, then deceleration
-
-        if (settings.easing === 'easeInCubic') pattern = time * time * time; // accelerating from zero velocity
-
-        if (settings.easing === 'easeOutCubic') pattern = --time * time * time + 1; // decelerating to zero velocity
-
-        if (settings.easing === 'easeInOutCubic') pattern = time < 0.5 ? 4 * time * time * time : (time - 1) * (2 * time - 2) * (2 * time - 2) + 1; // acceleration until halfway, then deceleration
-
-        if (settings.easing === 'easeInQuart') pattern = time * time * time * time; // accelerating from zero velocity
-
-        if (settings.easing === 'easeOutQuart') pattern = 1 - --time * time * time * time; // decelerating to zero velocity
-
-        if (settings.easing === 'easeInOutQuart') pattern = time < 0.5 ? 8 * time * time * time * time : 1 - 8 * --time * time * time * time; // acceleration until halfway, then deceleration
-
-        if (settings.easing === 'easeInQuint') pattern = time * time * time * time * time; // accelerating from zero velocity
-
-        if (settings.easing === 'easeOutQuint') pattern = 1 + --time * time * time * time * time; // decelerating to zero velocity
-
-        if (settings.easing === 'easeInOutQuint') pattern = time < 0.5 ? 16 * time * time * time * time * time : 1 + 16 * --time * time * time * time * time; // acceleration until halfway, then deceleration
-        // Custom Easing Patterns
-
+        if (settings.easing === 'easeInQuad') pattern = time * time;
+        if (settings.easing === 'easeOutQuad') pattern = time * (2 - time);
+        if (settings.easing === 'easeInOutQuad') pattern = time < 0.5 ? 2 * time * time : -1 + (4 - 2 * time) * time;
+        if (settings.easing === 'easeInCubic') pattern = time * time * time;
+        if (settings.easing === 'easeOutCubic') pattern = --time * time * time + 1;
+        if (settings.easing === 'easeInOutCubic') pattern = time < 0.5 ? 4 * time * time * time : (time - 1) * (2 * time - 2) * (2 * time - 2) + 1;
+        if (settings.easing === 'easeInQuart') pattern = time * time * time * time;
+        if (settings.easing === 'easeOutQuart') pattern = 1 - --time * time * time * time;
+        if (settings.easing === 'easeInOutQuart') pattern = time < 0.5 ? 8 * time * time * time * time : 1 - 8 * --time * time * time * time;
+        if (settings.easing === 'easeInQuint') pattern = time * time * time * time * time;
+        if (settings.easing === 'easeOutQuint') pattern = 1 + --time * time * time * time * time;
+        if (settings.easing === 'easeInOutQuint') pattern = time < 0.5 ? 16 * time * time * time * time * time : 1 + 16 * --time * time * time * time * time;
         if (settings.customEasing) pattern = settings.customEasing(time);
-        return pattern || time; // no easing, no acceleration
+        return pattern || time;
       };
 
       var updateURL = function updateURL(anchor, isNum, options) {
-        // Bail if the anchor is a number
-        if (isNum) return; // Verify that pushState is supported and the updateURL option is enabled
-
-        if (!history.pushState || !options.updateURL) return; // Update URL
-
+        if (isNum) return;
+        if (!history.pushState || !options.updateURL) return;
         history.pushState({
           Scroll: JSON.stringify(options),
           anchor: anchor.id
@@ -423,14 +289,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       };
 
       var adjustFocus = function adjustFocus(anchor, endLocation, isNum) {
-        // Is scrolling to top of page, blur
         if (anchor === 0) {
           body.focus();
-        } // Don't run if scrolling to a number on the page
+        }
 
-
-        if (isNum) return; // Otherwise, bring anchor element into focus
-
+        if (isNum) return;
         anchor.focus();
 
         if (doc.activeElement !== anchor) {
@@ -448,18 +311,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         if (settings.durationMin && speed < settings.durationMin) return settings.durationMin;
         return speed;
       };
-      /**
-       * Проверка было ли достигнуто указанное местоположение на странице (позиция по Y), или конец документа
-       * @param   {number}   startPosition   позиция с котрой началась прокрутка
-       * @param   {number}   endLocation     конечная позиция которую необходимо достичь
-       * @param   {[[Type]]} currentLocation текущая позиция на странице округлённая до целого числа в меньшую сторону
-       * @param   {function} fn              функция обратного вызова, которая срабатывает когда была достигнута заданная позиция, или конец документа. В которую будет сброшена текущая позиция на момент её срабатывания
-       * @returns {boolean}  [[Description]]
-       */
-
 
       var cancelPosition = function cancelPosition(startPosition, endLocation, fn) {
-        // Get the current position
         var currentPosition = win.pageYOffset;
 
         if (currentPosition === endLocation || (startPosition < endLocation && viewportHeight + currentPosition) >= heightBody) {
@@ -471,50 +324,33 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       };
 
       var animateScroll = function animateScroll(anchor, toggle, options, fn) {
-        var init = initArguments(options, fn); // Merge user options with defaults
-
-        var _settings = init.options; // Selectors and variables
-
+        var init = initArguments(options, fn);
+        var _settings = init.options;
         var isNum = isNumber(anchor);
         var anchorElem = isNum || !anchor.tagName ? null : anchor;
         if (!isNum && !anchorElem) return;
-        var startPosition = win.pageYOffset; // Current location on the page
+        var startPosition = win.pageYOffset;
 
         if (_settings.header && !fixedHeader) {
-          // Get the fixed header if not already set
           fixedHeader = qerySelector(_settings.header);
         }
 
         headerHeight = getHeaderHeight(fixedHeader);
-        var endPosition = isNum ? anchor : getEndLocation(anchorElem, headerHeight, parseInt(typeof _settings.offset === 'function' ? _settings.offset(anchor, toggle) : _settings.offset, 10), _settings.clip); // Location to scroll to
-
-        var distance = endPosition - startPosition; // distance to travel
-
+        var endPosition = isNum ? anchor : getEndLocation(anchorElem, headerHeight, parseInt(typeof _settings.offset === 'function' ? _settings.offset(anchor, toggle) : _settings.offset, 10), _settings.clip);
+        var distance = endPosition - startPosition;
         var speed = getSpeed(distance, _settings);
         var timeLapsed = 0;
         var start, percent, position;
-        /**
-         * Stop the scroll animation when it reaches its target (or the bottom/top of page)
-         * @param {Number} endLocation Scroll to location
-         * @param {Number} animationInterval How much to scroll on this loop
-         */
 
         var stopAnimateScroll = function stopAnimateScroll(endLocation) {
           return cancelPosition(startPosition, endLocation, function () {
-            cancelScroll(true); // Bring the anchored element into focus
-
-            adjustFocus(anchor, endLocation, isNum); // Emit a custom event
-
-            emitEvent('scrollStop', _settings, anchor, toggle); // Reset start
-
+            cancelScroll(true);
+            adjustFocus(anchor, endLocation, isNum);
+            emitEvent('scrollStop', _settings, anchor, toggle);
             start = null;
             animationInterval = null;
           });
         };
-        /**
-         * Loop scrolling animation
-         */
-
 
         var loopAnimateScroll = function loopAnimateScroll(timestamp) {
           if (!start) start = timestamp;
@@ -531,21 +367,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             if (fn) init.fn(anchorElem, endPosition);
           }
         };
-        /**
-         * Reset position to fix weird iOS bug
-         * @link https://github.com/cferdinandi/smooth-scroll/issues/45
-         */
-
 
         if (win.pageYOffset === 0) {
           win.scrollTo(0, 0);
-        } // Update the URL
+        }
 
-
-        updateURL(anchor, isNum, _settings); // Emit a custom event
-
-        emitEvent('scrollStart', _settings, anchor, toggle); // Start scrolling animation
-
+        updateURL(anchor, isNum, _settings);
+        emitEvent('scrollStart', _settings, anchor, toggle);
         cancelScroll(true);
         requestAnimationFrame(loopAnimateScroll);
       };
@@ -581,12 +409,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
         el.addEventListener('click', clickFunc);
       };
-      /**
-       * Возвращает набор одноуровневых элементов
-       * @param   {object} element элемент соседей которого находим
-       * @returns {Array}  массив в который не входит сам элемент, только одноуровневые элементы
-       */
-
 
       function siblings(element) {
         var ele = element.parentNode;
@@ -595,12 +417,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           return child !== element;
         });
       }
-      /**
-       * Обрабатываем массив элементов, для удалаления class="active", если он присутствует у какого либо элемента
-       * @param   {Array} arr массив в котором происходит удаление class="active"
-       * @returns {Array} массив элементов
-       */
-
 
       var elementRemoveClass = function elementRemoveClass(arr, nameClass) {
         nameClass = nameClass || 'active';
@@ -609,30 +425,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           return el;
         });
       };
-      /**
-       * Находи одноуровневых соседей элемента, если их нет, то находим одноуровненых соседей родительского элемента
-       * @param   {object} element  элемент у которого находим одноуровневых соседей, или соседей его родителя
-       * @param   {string} selector селектор внутри которого происходит поиск одноуровневых соседей элемента, или его родителя
-       * @returns {Array}  массив одноуровневых элементов, за исключением самого элемента или его родителя
-       */
-
 
       function siblingsParent(element, selector) {
         var toggle = parentElement = parentElement || element.closest(selector);
-        /** находим одноуровневые элементы */
-
         var sibling = siblingNavigation = siblingNavigation || siblings(element);
-        /** последний элемент массива, если массив пуст [] вернёт undefined */
-
         var last = sibling.slice(-1).pop();
-        /**
-         * если одноуровневых элементов нет, берём дочерние элементы указанного селектора
-         * @param {HTMLCollection} sibl
-         * */
-
         var sibl = last ? sibling : ArrayProtoSlice.call(toggle.children);
-        /** находим родителя элемента по которому произошел клик */
-
         var parent = last ? element : element.parentNode;
         return {
           sibl: sibl,
@@ -644,8 +442,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         var _siblingsParent = siblingsParent(element, selector),
             sibl = _siblingsParent.sibl,
             parent = _siblingsParent.parent;
-        /** отфилтровываем массив убирая из него сам элемент, или его родителя */
-
 
         var elemFilter = sibl.filter(function (el) {
           return el !== parent;
@@ -654,12 +450,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         elementRemoveClass(elemFilter);
         return parent;
       }
-      /**
-       * Метод который будет вызван при прокрутки страницы, для отслеживания отображения кнопки вверх или вниз
-       * @param {HTMLElement} el
-       * @private
-       */
-
 
       var scrollViewButton = function scrollViewButton(el, top, bottom) {
         var display;
@@ -673,56 +463,37 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         var anchor = arr.querySelectorAll('a');
         var init = initArguments(settings, fn);
         var options = init.options;
-        /** какая позиция достигнута */
-
         var currentActive = null;
         var parentAnkor = null;
         var top = null;
         var bottom = null;
 
         if (options.header && !fixedHeader) {
-          // Get the fixed header if not already set
           fixedHeader = qerySelector(options.header);
         }
 
         headerHeight = getHeaderHeight(fixedHeader);
-        /** Массив из позиций "якорных" блоков и ссылки из меню */
-
         var positions = ArrayProtoSlice.call(anchor).filter(function (element) {
           return element.hash !== '';
         }).map(function (elem) {
           var block = qerySelector(elem.hash);
           var rect = getBoundingClientRect(block);
           return {
-            /** верхняя позиция "якорных" блоков */
             top: floor(rect.top),
-
-            /** нижняя позиция блока */
             bottom: floor(rect.bottom),
-
-            /** @param {HTMLElement} a  */
             a: elem,
-
-            /** @param {HTMLElement} block - "якорный" блок */
             block: block
           };
         });
         positions = positions.reverse();
 
         var ScrollViewNavigation = function ScrollViewNavigation() {
-          /** текущая позиция */
           var currentPosition = win.pageYOffset;
 
           for (var i = 0; i < positions.length; i++) {
             var currentElement = positions[i];
-            /** верхняя позиция области просмотра */
-
             var viewportTop = currentPosition + headerHeight;
-            /** нижняя позиция области просмотра */
-
             var viewportBottom = viewportHeight + currentPosition;
-            /** зона реакции */
-
             var currentPositonView = options.navigation === 'top' && positionTopClient >= currentElement.top ? viewportTop : viewportBottom;
 
             if ((currentPosition < currentElement.top && currentPositonView) >= currentElement.top) {
@@ -735,7 +506,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               }
 
               break;
-              /** нижняя граница блока покинула верх просматриваемой области */
             }
 
             if ((currentPosition < currentElement.bottom && viewportTop) >= currentElement.bottom) {
@@ -746,7 +516,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               }
 
               break;
-              /** верхняя граница пересекла низ просматриваемой области */
             }
 
             if (currentActive === i && viewportBottom <= currentElement.top) {
@@ -762,28 +531,30 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         ScrollViewNavigation();
         eventScroll(ScrollViewNavigation);
       };
-      /* === === === === === === === === === === === ==
-      /* === === === === === === === === === === === ==
+      /*
        * @classdesc [[Description]]
-       * === === === === === === === === === === === ==
-       * === === === === === === === === === === === ==
+       *
+       *
        */
 
 
       var Scroll =
       /*#__PURE__*/
       function () {
+        /**
+         *Creates an instance of Scroll.
+         * @memberof Scroll
+         */
         function Scroll() {
           _classCallCheck(this, Scroll);
 
-          this._el = body;
-          var div = createElement({
+          this._button = createElement({
             element: 'div',
             className: settings.buttonClass
           });
-          this._button = div;
         }
         /**
+         * Показывает текущюю позицию на экране
          * Gets the current scroll position of the scroll container.
          * @returns {number}
          */
@@ -796,8 +567,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
            * Scrolls the element until it's scroll properties match the coordinates provided.
            * @param {Number} y - The pixel along the vertical axis of the element that you want displayed in the upper left.
            * @param {Object} [settings] - Scroll options
-           * @param {Number} [options.duration]- The amount of time for the animation
-           * @param {string} [options.easing] - The easing function to use
+           * @param {Number} [settings.duration]- The amount of time for the animation
+           * @param {string} [settings.easing] - The easing function to use
            * @return {Promise}
            */
           value: function to(y, settings, fn) {
@@ -816,9 +587,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             animateScroll(el, docElement, settings, fn);
           }
           /**
-           * [[Description]]
-           * @param   {object}   settings [[Description]]
-           * @returns {[[Type]]} [[Description]]
+           * Прокрутка страницы в верх (в начало)
+           * @param   {object} settings The scroll options
+           * @returns this
            */
 
         }, {
@@ -828,8 +599,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             return this;
           }
           /**
-           * [[Description]]
-           * @param   {[[Type]]} settings [[Description]]
+           * Прокрутка страницы в низ (конец)
+           * @param   {object}   settings The scroll options
            * @returns {[[Type]]} [[Description]]
            */
 
@@ -840,9 +611,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             return this;
           }
           /**
-           * [[Description]]
-           * @param   {[[Type]]} settings [[Description]]
-           * @param   {[[Type]]} fn     [[Description]]
+           * Кнопка прокрутки страницы в верх
+           * @param   {object}   settings The scroll options
+           * @param   {function} fn       Функция обратного вызова callback
            * @returns {[[Type]]} [[Description]]
            */
 
@@ -857,9 +628,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             return this;
           }
           /**
-           * [[Description]]
-           * @param   {[[Type]]} option [[Description]]
-           * @param   {[[Type]]} fn     [[Description]]
+           * Кнопка прокрутки страницы в низ
+           * @param   {object}   option The scroll options
+           * @param   {function} fn     Функция обратного вызова callback
            * @returns {[[Type]]} [[Description]]
            */
 
@@ -874,9 +645,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             return this;
           }
           /**
-           * [[Description]]
-           * @param {[[Type]]} settings = setOption [[Description]]
-           * @param {[[Type]]} fn                  [[Description]]
+           * Установка кнопок прокритки страницы в верх и вниз
+           * @param {object}   settings The scroll options
+           * @param {function} fn       Функция обратного вызова callback
            */
 
         }, {
@@ -911,16 +682,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             eventScroll(displayButton);
           }
           /**
-           * [[Description]]
-           * @param   {[[Type]]} selector [[Description]]
-           * @param   {[[Type]]} fn [[Description]]
+           * По мере прокрутки страницы для выбранных элементов происходит срабатывание функции обратного вызова
+           * @param   {object}   selector The scroll options
+           * @param   {function} fn       Функция обратного вызова callback
            * @returns {[[Type]]} [[Description]]
            */
 
         }, {
           key: "view",
           value: function view(selector, settings, fn) {
-            // let arrlength
             var init = initArguments(settings, fn);
             var arr = isArray(selector) ? selector : $$(selector);
             var positions = arr.map(function (elem) {
@@ -933,15 +703,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             });
 
             var processScroll = function processScroll() {
-              /** текущая позиция */
               var currentPosition = win.pageYOffset;
               var length = positions.length;
 
               if (length > 0) {
                 for (var i = 0; i < positions.length; i++) {
                   var currentElement = positions[i];
-                  /** нижняя позиция области просмотра */
-
                   var viewportBottom = viewportHeight + currentPosition;
 
                   if ((currentPosition < currentElement.top && viewportBottom) >= currentElement.top) {
@@ -950,22 +717,19 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                   }
                 }
               } else if (length === 0) {
-                // console.log('!!!!')
                 doc.removeEventListener('scroll', processScroll);
               }
             };
-            /** Если элемент попал на первый экран */
-
 
             processScroll();
             eventScroll(processScroll);
             return this;
           }
           /**
-           * [[Description]]
-           * @param   {[[Type]]} selector          [[Description]]
-           * @param   {[[Type]]} settings          [[Description]]
-           * @param   {[[Type]]} fn                [[Description]]
+           * Навигационое меню. При клике на пункт меню происходит плавная прокрутка к элементу указанному в анкоре. По мере прокрутки страницы в верх, или в низ, элемент достигший верха просматриваемой области, или пересёкший нижнюю границу просматриваемой области, в зависимости от настроек, происходит добавление класса к ссылке которая указывает на данный элемент, а также роисходит срабатывание функции обратного вызова, в которую будет передан блок и анкор, на котором произошло событие.
+           * @param   {string}   selector class или id меню, для организации новигации по сайту
+           * @param   {object}   settings The scroll options
+           * @param   {function} fn       Функция обратного вызова callback
            * @returns {[[Type]]} [[Description]]
            */
 
@@ -998,14 +762,20 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           get: function get() {
             return body.scrollTop || docElement.scrollTop;
           }
-          /** Размеры просматриваемой области page */
+          /**
+           * Размеры просматриваемой области page
+           * @returns {number}
+           */
 
         }, {
           key: "viewPort",
           get: function get() {
             return getViewportAndElementSizes().view;
           }
-          /** размер страницы */
+          /**
+           * размер страницы
+           * @returns {number}
+           */
 
         }, {
           key: "page",
@@ -1017,22 +787,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         return Scroll;
       }();
 
-      if (J) {
-        J.Scroll = Scroll; // J.requestAnimationFrame = requestAnimationFrame
-        // J.domRect = getBoundingClientRect
-        // J.viewHeight = viewportHeight
-        // J.heightBody = heightBody
-        // J.elementInViewport = elementInViewport
-
-        if (J.jQueryLoaded) {
-          J.initializeJqueryWrapper(Scroll, 'actionScroll', 'J_Scroll');
-        }
-      }
+      window.Scroll = Scroll;
 
       if (typeof define === 'function' && define.amd) {
         define('Scroll', [], function () {
           return Scroll;
-        }); // Common JS
+        });
       } else if (typeof exports !== 'undefined' && !exports.nodeType) {
         if (typeof module !== 'undefined' && !module.nodeType && module.exports) {
           // eslint-disable-next-line no-global-assign

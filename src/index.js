@@ -1,43 +1,16 @@
-<<<<<<< Updated upstream
-/* global J, exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError */
-=======
 /* global exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError*/
-/* eslint-disable no-console */
->>>>>>> Stashed changes
 (function () {
   'use strict'
 
-  // let escapeCharacters = require('./escapecharacters');
-  // let v = require('./var')
-  // console.log('v', v)
-  // let size = require('./getViewportAndElementSizes')
-  // let getViewportAndElementSizes = size.getViewportAndElementSizes
-  // let getHeight = size.getHeight
   let fixedHeader
   let headerHeight
   let animationInterval
-
-  /** 
-   * Массив из одноуровневых элементов, если их нет то [] 
-   * @param {Array} 
-   * */
   let siblingNavigation = null
-
-  /** родительский элемент внутри которого происходит поиск одноуровневых соседей элемента, или его родителя */
   let parentElement = null
-
-  /** @param {HTMLElement} document */
   let doc = document
-  /** @param {HTMLElement} window */
   let win = window
-  /**
-   * @param {HTMLElement} document.body
-   * @private
-   */
   let body = doc.body
-  /** @param {HTMLElement} document.documentElement */
   let docElement = doc.documentElement
-
   /** Default settings */
   let settings = {
     // Selectors
@@ -75,20 +48,11 @@
 
   }
 
-  /**
-   * Находим элемент в DOM
-   * @param {String} name имя id
-   * @private
-   */
-  // let Id = (name) => doc.getElementById(name)
-
   let qerySelector = (name) => doc.querySelector(name)
   let floor = Math.floor
   let max = Math.max
   let min = Math.min
-  /** @param {Array} Array.prototype.slice */
   let ArrayProtoSlice = Array.prototype.slice
-  /** document.querySelectorAll */
   let $$ = (selector) => {
     return (ArrayProtoSlice.call((!selector ? [] : doc.querySelectorAll(selector))))
   }
@@ -101,10 +65,6 @@
     win.setTimeout(callback, 1000 / 60)
   }
 
-  /**
-   * [[Description]]
-   * @param {[[Type]]} callback [[Description]]
-   */
   let requestAnimationFrame = function (callback) {
     var requestFn = win.requestAnimationFrame ||
       win.mozRequestAnimationFrame ||
@@ -113,12 +73,6 @@
     requestFn.call(win, callback)
   }
 
-  /**
-   * Объединяем два или больше объектов вместе. Merge two or more objects together.
-   * @param   {Object}   objects  The objects to merge together
-   * @returns {Object}            Merged values of defaults and options
-   * @private
-   */
   let extend = function () {
     let merged = {}
     Array.prototype.forEach.call(arguments, function (obj) {
@@ -144,7 +98,6 @@
   let eventScroll = (fn) => doc.addEventListener('scroll', fn)
 
   var escapeCharacters = function (id) {
-    // Remove leading hash
     if (id.charAt(0) === '#') {
       id = id.substr(1)
     }
@@ -157,11 +110,6 @@
     var firstCodeUnit = string.charCodeAt(0)
     while (++index < length) {
       codeUnit = string.charCodeAt(index)
-      // Note: thereтАЩs no need to special-case astral symbols, surrogate
-      // pairs, or lone surrogates.
-
-      // If the character is NULL (U+0000), then throw an
-      // `InvalidCharacterError` exception and terminate these steps.
       if (codeUnit === 0x0000) {
         throw new InvalidCharacterError(
           'Invalid character: the input contains U+0000.'
@@ -169,29 +117,18 @@
       }
 
       if (
-        // If the character is in the range [\1-\1F] (U+0001 to U+001F) or is
-        // U+007F, [тАж]
         (codeUnit >= 0x0001 && codeUnit <= 0x001F) || codeUnit === 0x007F ||
-        // If the character is the first character and is in the range [0-9]
-        // (U+0030 to U+0039), [тАж]
         (index === 0 && codeUnit >= 0x0030 && codeUnit <= 0x0039) ||
-        // If the character is the second character and is in the range [0-9]
-        // (U+0030 to U+0039) and the first character is a `-` (U+002D), [тАж]
         (
           index === 1 &&
           codeUnit >= 0x0030 && codeUnit <= 0x0039 &&
           firstCodeUnit === 0x002D
         )
       ) {
-        // http://dev.w3.org/csswg/cssom/#escape-a-character-as-code-point
         result += '\\' + codeUnit.toString(16) + ' '
         continue
       }
 
-      // If the character is not handled by one of the above rules and is
-      // greater than or equal to U+0080, is `-` (U+002D) or `_` (U+005F), or
-      // is in one of the ranges [0-9] (U+0030 to U+0039), [A-Z] (U+0041 to
-      // U+005A), or [a-z] (U+0061 to U+007A), [тАж]
       if (
         codeUnit >= 0x0080 ||
         codeUnit === 0x002D ||
@@ -200,51 +137,28 @@
         (codeUnit >= 0x0041 && codeUnit <= 0x005A) ||
         (codeUnit >= 0x0061 && codeUnit <= 0x007A)
       ) {
-        // the character itself
         result += string.charAt(index)
         continue
       }
 
-      // Otherwise, the escaped character.
-      // http://dev.w3.org/csswg/cssom/#escape-a-character
       result += '\\' + string.charAt(index)
     }
 
-    // Return sanitized hash
     return '#' + result
   }
 
-  /**
-   * Проверяет является ли заданный элемент document.body или document.documentElement
-   * @param   {object}  el элемент
-   * @returns {boolean}
-   */
   let isRootContainer = function (el) {
     return (el === docElement || el === body)
   }
 
-  /**
-   * Высота (height)
-   * @param   {object} el элемент
-   * @returns {number}
-   */
   let getHeight = function (el) {
     return (max(el.scrollHeight, el.clientHeight, el.offsetHeight))
   }
 
-  /**
-   * Ширина (weight)
-   * @param   {object} el элемент
-   * @returns {number}
-   */
   let getWidth = function (el) {
     return (max(el.scrollWidth, el.clientWidth, el.offsetWidth))
   }
-  /**
-   * Высота и ширина указанного элемента
-   * @param   {object} el элемент
-   * @returns {object} {width: ..., height: ...}
-   */
+
   let getSize = function (el) {
     return ({
       width: getWidth(el),
@@ -252,22 +166,15 @@
     })
   }
 
-  /**
-   * Получение высоты и ширины элемента. Если не задан элемент то получаем высоту и ширину просматриваемой области и высоту с шириной страницы
-   * @param   {object} el = document.body элемент. Если не задан то используется по умолчанию
-   * @returns {object} {view:  просматриваемая область экрана ,size: страница}, если элемент !== document.body или document.documentElement то view идентичен size . {view: width:height:},size:{width:height:}}
-   */
   let getViewportAndElementSizes = function (el = body) {
     var isRoot = isRootContainer(el)
     return {
-      /** Высота и ширина просматриваемой области */
       view: {
         width: isRoot ?
           min(win.innerWidth, docElement.clientWidth) : el.clientWidth,
         height: isRoot ?
           win.innerHeight : el.clientHeight
       },
-      /** размер страницы или элемента */
       size: isRoot ? {
         width: max(getWidth(body), getWidth(docElement)),
         height: max(getHeight(body), getHeight(docElement))
@@ -275,25 +182,11 @@
     }
   }
 
-
-  /**
-   *
-   * @param {HTMLElement} el элемент
-   * @private
-   */
   let getBoundingClientRect = (el) => el.getBoundingClientRect()
-  /** Высота области просмотра */
   let viewportHeight = getViewportAndElementSizes().view.height
-  /** высота страницы */
   let heightBody = getViewportAndElementSizes().size.height
-  /** верхняя позиция последнего просматриваемого экрана */
   let positionTopClient = heightBody - viewportHeight
 
-  /**
-   * Get the height of the fixed header
-   * @param  {Node}   header The header
-   * @return {Number}        The height of the header
-   */
   let getHeaderHeight = function (header) {
     return !header ? 0 : (getHeight(header) + header.offsetTop)
   }
@@ -301,33 +194,28 @@
   let getEasing = function (settings, time) {
     let pattern
     // Default Easing Patterns
-    if (settings.easing === 'easeInQuad') pattern = time * time // accelerating from zero velocity
-    if (settings.easing === 'easeOutQuad') pattern = time * (2 - time) // decelerating to zero velocity
-    if (settings.easing === 'easeInOutQuad') pattern = time < 0.5 ? 2 * time * time : -1 + (4 - 2 * time) * time // acceleration until halfway, then deceleration
-    if (settings.easing === 'easeInCubic') pattern = time * time * time // accelerating from zero velocity
-    if (settings.easing === 'easeOutCubic') pattern = (--time) * time * time + 1 // decelerating to zero velocity
-    if (settings.easing === 'easeInOutCubic') pattern = time < 0.5 ? 4 * time * time * time : (time - 1) * (2 * time - 2) * (2 * time - 2) + 1 // acceleration until halfway, then deceleration
-    if (settings.easing === 'easeInQuart') pattern = time * time * time * time // accelerating from zero velocity
-    if (settings.easing === 'easeOutQuart') pattern = 1 - (--time) * time * time * time // decelerating to zero velocity
-    if (settings.easing === 'easeInOutQuart') pattern = time < 0.5 ? 8 * time * time * time * time : 1 - 8 * (--time) * time * time * time // acceleration until halfway, then deceleration
-    if (settings.easing === 'easeInQuint') pattern = time * time * time * time * time // accelerating from zero velocity
-    if (settings.easing === 'easeOutQuint') pattern = 1 + (--time) * time * time * time * time // decelerating to zero velocity
-    if (settings.easing === 'easeInOutQuint') pattern = time < 0.5 ? 16 * time * time * time * time * time : 1 + 16 * (--time) * time * time * time * time // acceleration until halfway, then deceleration
+    if (settings.easing === 'easeInQuad') pattern = time * time
+    if (settings.easing === 'easeOutQuad') pattern = time * (2 - time)
+    if (settings.easing === 'easeInOutQuad') pattern = time < 0.5 ? 2 * time * time : -1 + (4 - 2 * time) * time
+    if (settings.easing === 'easeInCubic') pattern = time * time * time
+    if (settings.easing === 'easeOutCubic') pattern = (--time) * time * time + 1
+    if (settings.easing === 'easeInOutCubic') pattern = time < 0.5 ? 4 * time * time * time : (time - 1) * (2 * time - 2) * (2 * time - 2) + 1
+    if (settings.easing === 'easeInQuart') pattern = time * time * time * time
+    if (settings.easing === 'easeOutQuart') pattern = 1 - (--time) * time * time * time
+    if (settings.easing === 'easeInOutQuart') pattern = time < 0.5 ? 8 * time * time * time * time : 1 - 8 * (--time) * time * time * time
+    if (settings.easing === 'easeInQuint') pattern = time * time * time * time * time
+    if (settings.easing === 'easeOutQuint') pattern = 1 + (--time) * time * time * time * time
+    if (settings.easing === 'easeInOutQuint') pattern = time < 0.5 ? 16 * time * time * time * time * time : 1 + 16 * (--time) * time * time * time * time
 
-    // Custom Easing Patterns
     if (settings.customEasing) pattern = settings.customEasing(time)
 
-    return pattern || time // no easing, no acceleration
+    return pattern || time
   }
 
   var updateURL = function (anchor, isNum, options) {
-    // Bail if the anchor is a number
     if (isNum) return
-
-    // Verify that pushState is supported and the updateURL option is enabled
     if (!history.pushState || !options.updateURL) return
 
-    // Update URL
     history.pushState({
         Scroll: JSON.stringify(options),
         anchor: anchor.id
@@ -372,13 +260,10 @@
   }
 
   let adjustFocus = function (anchor, endLocation, isNum) {
-    // Is scrolling to top of page, blur
     if (anchor === 0) {
       body.focus()
     }
-    // Don't run if scrolling to a number on the page
     if (isNum) return
-    // Otherwise, bring anchor element into focus
     anchor.focus()
     if (doc.activeElement !== anchor) {
       anchor.setAttribute('tabindex', '-1')
@@ -395,16 +280,7 @@
     return speed
   }
 
-  /**
-   * Проверка было ли достигнуто указанное местоположение на странице (позиция по Y), или конец документа
-   * @param   {number}   startPosition   позиция с котрой началась прокрутка
-   * @param   {number}   endLocation     конечная позиция которую необходимо достичь
-   * @param   {[[Type]]} currentLocation текущая позиция на странице округлённая до целого числа в меньшую сторону
-   * @param   {function} fn              функция обратного вызова, которая срабатывает когда была достигнута заданная позиция, или конец документа. В которую будет сброшена текущая позиция на момент её срабатывания
-   * @returns {boolean}  [[Description]]
-   */
   let cancelPosition = function (startPosition, endLocation, fn) {
-    // Get the current position
     var currentPosition = win.pageYOffset
     if (currentPosition === endLocation || ((startPosition < endLocation && viewportHeight + currentPosition) >= heightBody)) {
       if (fn) fn(currentPosition)
@@ -414,45 +290,32 @@
   }
 
   let animateScroll = function (anchor, toggle, options, fn) {
-    let init = initArguments(options, fn) // Merge user options with defaults
+    let init = initArguments(options, fn)
     let _settings = init.options
-    // Selectors and variables
     let isNum = isNumber(anchor)
     let anchorElem = isNum || !anchor.tagName ? null : anchor
     if (!isNum && !anchorElem) return
-    let startPosition = win.pageYOffset // Current location on the page
+    let startPosition = win.pageYOffset
     if (_settings.header && !fixedHeader) {
-      // Get the fixed header if not already set
       fixedHeader = qerySelector(_settings.header)
     }
     headerHeight = getHeaderHeight(fixedHeader)
-    let endPosition = isNum ? anchor : getEndLocation(anchorElem, headerHeight, parseInt((typeof _settings.offset === 'function' ? _settings.offset(anchor, toggle) : _settings.offset), 10), _settings.clip) // Location to scroll to
-    let distance = endPosition - startPosition // distance to travel
+    let endPosition = isNum ? anchor : getEndLocation(anchorElem, headerHeight, parseInt((typeof _settings.offset === 'function' ? _settings.offset(anchor, toggle) : _settings.offset), 10), _settings.clip)
+    let distance = endPosition - startPosition
     let speed = getSpeed(distance, _settings)
     let timeLapsed = 0
     let start, percent, position
 
-    /**
-     * Stop the scroll animation when it reaches its target (or the bottom/top of page)
-     * @param {Number} endLocation Scroll to location
-     * @param {Number} animationInterval How much to scroll on this loop
-     */
     var stopAnimateScroll = function (endLocation) {
       return cancelPosition(startPosition, endLocation, function () {
         cancelScroll(true)
-        // Bring the anchored element into focus
         adjustFocus(anchor, endLocation, isNum)
-        // Emit a custom event
         emitEvent('scrollStop', _settings, anchor, toggle)
-        // Reset start
         start = null
         animationInterval = null
       })
     }
 
-    /**
-     * Loop scrolling animation
-     */
     var loopAnimateScroll = function (timestamp) {
       if (!start) start = timestamp
       timeLapsed += timestamp - start
@@ -468,18 +331,11 @@
       }
     }
 
-    /**
-     * Reset position to fix weird iOS bug
-     * @link https://github.com/cferdinandi/smooth-scroll/issues/45
-     */
     if (win.pageYOffset === 0) {
       win.scrollTo(0, 0)
     }
-    // Update the URL
     updateURL(anchor, isNum, _settings)
-    // Emit a custom event
     emitEvent('scrollStart', _settings, anchor, toggle)
-    // Start scrolling animation
     cancelScroll(true)
     requestAnimationFrame(loopAnimateScroll)
   }
@@ -513,12 +369,6 @@
     el.addEventListener('click', clickFunc)
   }
 
-
-  /**
-   * Возвращает набор одноуровневых элементов
-   * @param   {object} element элемент соседей которого находим
-   * @returns {Array}  массив в который не входит сам элемент, только одноуровневые элементы
-   */
   function siblings(element) {
     let ele = element.parentNode
     let children = ArrayProtoSlice.call(ele.children)
@@ -527,11 +377,6 @@
     })
   }
 
-  /**
-   * Обрабатываем массив элементов, для удалаления class="active", если он присутствует у какого либо элемента
-   * @param   {Array} arr массив в котором происходит удаление class="active"
-   * @returns {Array} массив элементов
-   */
   let elementRemoveClass = (arr, nameClass) => {
     nameClass = nameClass || 'active'
     return arr.map(el => {
@@ -540,24 +385,11 @@
     })
   }
 
-  /**
-   * Находи одноуровневых соседей элемента, если их нет, то находим одноуровненых соседей родительского элемента
-   * @param   {object} element  элемент у которого находим одноуровневых соседей, или соседей его родителя
-   * @param   {string} selector селектор внутри которого происходит поиск одноуровневых соседей элемента, или его родителя
-   * @returns {Array}  массив одноуровневых элементов, за исключением самого элемента или его родителя
-   */
   function siblingsParent(element, selector) {
     let toggle = parentElement = parentElement || element.closest(selector)
-    /** находим одноуровневые элементы */
     let sibling = siblingNavigation = siblingNavigation || siblings(element)
-    /** последний элемент массива, если массив пуст [] вернёт undefined */
     let last = sibling.slice(-1).pop()
-    /**
-     * если одноуровневых элементов нет, берём дочерние элементы указанного селектора
-     * @param {HTMLCollection} sibl
-     * */
     let sibl = last ? sibling : ArrayProtoSlice.call(toggle.children)
-    /** находим родителя элемента по которому произошел клик */
     let parent = last ? element : element.parentNode
     return {
       sibl,
@@ -570,18 +402,12 @@
       sibl,
       parent
     } = siblingsParent(element, selector)
-    /** отфилтровываем массив убирая из него сам элемент, или его родителя */
     let elemFilter = sibl.filter(el => el !== parent)
     parent.classList.add('active')
     elementRemoveClass(elemFilter)
     return parent
   }
 
-  /**
-   * Метод который будет вызван при прокрутки страницы, для отслеживания отображения кнопки вверх или вниз
-   * @param {HTMLElement} el
-   * @private
-   */
   let scrollViewButton = (el, top, bottom) => {
     let display
     let positionTop = docElement.scrollTop
@@ -596,30 +422,23 @@
     let anchor = arr.querySelectorAll('a')
     let init = initArguments(settings, fn)
     let options = init.options
-    /** какая позиция достигнута */
     let currentActive = null
     let parentAnkor = null
     let top = null
     let bottom = null
     if (options.header && !fixedHeader) {
-      // Get the fixed header if not already set
       fixedHeader = qerySelector(options.header)
     }
     headerHeight = getHeaderHeight(fixedHeader)
-    /** Массив из позиций "якорных" блоков и ссылки из меню */
     let positions = ArrayProtoSlice.call(anchor).filter(element => {
       return element.hash !== ''
     }).map(elem => {
       let block = qerySelector(elem.hash)
       let rect = getBoundingClientRect(block)
       return {
-        /** верхняя позиция "якорных" блоков */
         top: floor(rect.top),
-        /** нижняя позиция блока */
         bottom: floor(rect.bottom),
-        /** @param {HTMLElement} a  */
         a: elem,
-        /** @param {HTMLElement} block - "якорный" блок */
         block: block
       }
     })
@@ -627,15 +446,11 @@
     positions = positions.reverse()
 
     let ScrollViewNavigation = () => {
-      /** текущая позиция */
       let currentPosition = win.pageYOffset
       for (var i = 0; i < positions.length; i++) {
         let currentElement = positions[i]
-        /** верхняя позиция области просмотра */
         let viewportTop = currentPosition + headerHeight
-        /** нижняя позиция области просмотра */
         let viewportBottom = viewportHeight + currentPosition
-        /** зона реакции */
         let currentPositonView = (options.navigation === 'top' && positionTopClient >= currentElement.top) ? viewportTop : viewportBottom
         if ((currentPosition < currentElement.top && currentPositonView) >= currentElement.top) {
           if (currentActive !== i) {
@@ -646,7 +461,6 @@
             if (init.fn) init.fn(bottom, currentElement.a)
           }
           break
-          /** нижняя граница блока покинула верх просматриваемой области */
         }
         if ((currentPosition < currentElement.bottom && viewportTop) >= currentElement.bottom) {
           if (bottom !== i) {
@@ -655,7 +469,6 @@
             currentActive = null
           }
           break
-          /** верхняя граница пересекла низ просматриваемой области */
         }
         if (currentActive === i && viewportBottom <= currentElement.top) {
           if (top !== i) {
@@ -672,15 +485,17 @@
     eventScroll(ScrollViewNavigation)
   }
 
-  /* === === === === === === === === === === === ==
-  /* === === === === === === === === === === === ==
+  /*
    * @classdesc [[Description]]
-   * === === === === === === === === === === === ==
-   * === === === === === === === === === === === ==
+   *
+   *
    */
   class Scroll {
+    /**
+     *Creates an instance of Scroll.
+     * @memberof Scroll
+     */
     constructor() {
-      this._el = body
       this._button = createElement({
         element: 'div',
         className: settings.buttonClass
@@ -716,8 +531,8 @@
      * Scrolls the element until it's scroll properties match the coordinates provided.
      * @param {Number} y - The pixel along the vertical axis of the element that you want displayed in the upper left.
      * @param {Object} [settings] - Scroll options
-     * @param {Number} [options.duration]- The amount of time for the animation
-     * @param {string} [options.easing] - The easing function to use
+     * @param {Number} [settings.duration]- The amount of time for the animation
+     * @param {string} [settings.easing] - The easing function to use
      * @return {Promise}
      */
     to(y, settings, fn) {
@@ -735,9 +550,9 @@
     }
 
     /**
-     * [[Description]]
-     * @param   {object}   settings [[Description]]
-     * @returns {[[Type]]} [[Description]]
+     * Прокрутка страницы в верх (в начало)
+     * @param   {object} settings The scroll options
+     * @returns this
      */
     top(settings, fn) {
       animateScroll(0, docElement, settings, fn)
@@ -745,8 +560,8 @@
     }
 
     /**
-     * [[Description]]
-     * @param   {[[Type]]} settings [[Description]]
+     * Прокрутка страницы в низ (конец)
+     * @param   {object}   settings The scroll options
      * @returns {[[Type]]} [[Description]]
      */
     bottom(settings, fn) {
@@ -755,9 +570,9 @@
     }
 
     /**
-     * [[Description]]
-     * @param   {[[Type]]} settings [[Description]]
-     * @param   {[[Type]]} fn     [[Description]]
+     * Кнопка прокрутки страницы в верх
+     * @param   {object}   settings The scroll options
+     * @param   {function} fn       Функция обратного вызова callback
      * @returns {[[Type]]} [[Description]]
      */
     up(settings, fn) {
@@ -770,9 +585,9 @@
     }
 
     /**
-     * [[Description]]
-     * @param   {[[Type]]} option [[Description]]
-     * @param   {[[Type]]} fn     [[Description]]
+     * Кнопка прокрутки страницы в низ
+     * @param   {object}   option The scroll options
+     * @param   {function} fn     Функция обратного вызова callback
      * @returns {[[Type]]} [[Description]]
      */
     down(settings, fn) {
@@ -785,9 +600,9 @@
     }
 
     /**
-     * [[Description]]
-     * @param {[[Type]]} settings = setOption [[Description]]
-     * @param {[[Type]]} fn                  [[Description]]
+     * Установка кнопок прокритки страницы в верх и вниз
+     * @param {object}   settings The scroll options
+     * @param {function} fn       Функция обратного вызова callback
      */
     all(settings, fn) {
       insert(body, this._button)
@@ -812,13 +627,12 @@
     }
 
     /**
-     * [[Description]]
-     * @param   {[[Type]]} selector [[Description]]
-     * @param   {[[Type]]} fn [[Description]]
+     * По мере прокрутки страницы для выбранных элементов происходит срабатывание функции обратного вызова
+     * @param   {object}   selector The scroll options
+     * @param   {function} fn       Функция обратного вызова callback
      * @returns {[[Type]]} [[Description]]
      */
     view(selector, settings, fn) {
-      // let arrlength
       let init = initArguments(settings, fn)
       let arr = isArray(selector) ? selector : $$(selector)
       let positions = arr.map(elem => {
@@ -831,13 +645,11 @@
       })
 
       let processScroll = () => {
-        /** текущая позиция */
         let currentPosition = win.pageYOffset
         let length = positions.length
         if (length > 0) {
           for (let i = 0; i < positions.length; i++) {
             let currentElement = positions[i]
-            /** нижняя позиция области просмотра */
             let viewportBottom = viewportHeight + currentPosition
             if ((currentPosition < currentElement.top && viewportBottom) >= currentElement.top) {
               if (init.fn) init.fn(currentElement.elem, positions)
@@ -845,21 +657,19 @@
             }
           }
         } else if (length === 0) {
-          // console.log('!!!!')
           doc.removeEventListener('scroll', processScroll)
         }
       }
-      /** Если элемент попал на первый экран */
       processScroll()
       eventScroll(processScroll)
       return this
     }
 
     /**
-     * [[Description]]
-     * @param   {[[Type]]} selector          [[Description]]
-     * @param   {[[Type]]} settings          [[Description]]
-     * @param   {[[Type]]} fn                [[Description]]
+     * Навигационое меню. При клике на пункт меню происходит плавная прокрутка к элементу указанному в анкоре. По мере прокрутки страницы в верх, или в низ, элемент достигший верха просматриваемой области, или пересёкший нижнюю границу просматриваемой области, в зависимости от настроек, происходит добавление класса к ссылке которая указывает на данный элемент, а также роисходит срабатывание функции обратного вызова, в которую будет передан блок и анкор, на котором произошло событие.
+     * @param   {string}   selector class или id меню, для организации новигации по сайту
+     * @param   {object}   settings The scroll options
+     * @param   {function} fn       Функция обратного вызова callback
      * @returns {[[Type]]} [[Description]]
      */
     navigation(selector, settings, fn) {
@@ -882,27 +692,12 @@
     }
   }
 
-
-  // if (J) {
-  //   J.Scroll = Scroll
-  //   if (J.jQueryLoaded) {
-  //     J.initializeJqueryWrapper(
-  //       Scroll,
-  //       'actionScroll',
-  //       'J_Scroll'
-  //     )
-  //   }
-  // } else {
-  //   window.Scroll = Scroll
-  // }
-
   window.Scroll = Scroll
 
   if (typeof define === 'function' && define.amd) {
     define('Scroll', [], function () {
       return Scroll
     })
-    // Common JS
   } else if (typeof exports !== 'undefined' && !exports.nodeType) {
     if (typeof module !== 'undefined' && !module.nodeType && module.exports) {
       // eslint-disable-next-line no-global-assign

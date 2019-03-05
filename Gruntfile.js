@@ -152,7 +152,7 @@ module.exports = function (grunt) {
   grunt.initConfig(config);
   grunt.registerTask("default", ["babel"]); // "concat:temp",
   grunt.registerTask("js_compile", [
-    'browserify:dist',
+    "browserify:dist",
     "babel:dist",
     "uglify:dist",
     "notify:js_compile",
