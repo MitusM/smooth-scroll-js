@@ -537,6 +537,7 @@
      */
     to(y, settings, fn) {
       animateScroll(y, docElement, settings, fn)
+      return this
     }
 
     /**
@@ -547,6 +548,7 @@
     toElement(el, settings, fn) {
       el = qerySelector(el)
       animateScroll(el, docElement, settings, fn)
+      return this
     }
 
     /**
@@ -624,6 +626,7 @@
       scrollViewButton(divTop, initTop, initBottom)
       this._button.addEventListener('click', clickHahdler, false)
       eventScroll(displayButton)
+      return this
     }
 
     /**
