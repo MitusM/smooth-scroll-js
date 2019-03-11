@@ -10,23 +10,6 @@ module.exports = function (grunt) {
         },
       },
     },
-    concat: {
-      options: {
-        separator: ";",
-      },
-      temp: {
-        options: {
-          sourceMap: false,
-        },
-        src: [
-          "src/var.js",
-          "src/getViewportAndElementSizes.js",
-          "src/escapecharacters.js",
-          "src/index.js"
-        ],
-        dest: "temp/index.js",
-      },
-    },
     babel: {
       options: {
         sourceMap: false,
