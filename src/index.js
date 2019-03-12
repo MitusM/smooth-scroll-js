@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* global exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError*/
 (function () {
   'use strict'
@@ -182,10 +183,10 @@
     }
   }
 
-  let getBoundingClientRect = (el) => el.getBoundingClientRect()
   let viewportHeight = getViewportAndElementSizes().view.height
   let heightBody = getViewportAndElementSizes().size.height
   let positionTopClient = heightBody - viewportHeight
+  let getBoundingClientRect = (el) => el.getBoundingClientRect()
 
   let getHeaderHeight = function (header) {
     return !header ? 0 : (getHeight(header) + header.offsetTop)
@@ -694,6 +695,7 @@
       return this
     }
   }
+
 
   window.Scroll = Scroll
 

@@ -40,6 +40,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
   return r;
 })()({
   1: [function (require, module, exports) {
+    /* eslint-disable no-console */
+
     /* global exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError*/
     (function () {
       'use strict';
@@ -573,6 +575,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
            */
           value: function to(y, settings, fn) {
             animateScroll(y, docElement, settings, fn);
+            return this;
           }
           /**
            * Scroll to an element.
@@ -585,6 +588,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           value: function toElement(el, settings, fn) {
             el = qerySelector(el);
             animateScroll(el, docElement, settings, fn);
+            return this;
           }
           /**
            * Прокрутка страницы в верх (в начало)
@@ -680,6 +684,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             this._button.addEventListener('click', clickHahdler, false);
 
             eventScroll(displayButton);
+            return this;
           }
           /**
            * По мере прокрутки страницы для выбранных элементов происходит срабатывание функции обратного вызова
@@ -756,6 +761,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             }
 
             return this;
+          }
+        }, {
+          key: "infinite",
+          value: function infinite(settings, fn) {
+            var currentPosition = win.pageXOffset;
+            var pageBottom = viewportHeight + currentPosition;
+            console.log("pageBottom", pageBottom);
           }
         }, {
           key: "scrollPosition",

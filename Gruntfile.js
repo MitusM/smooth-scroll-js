@@ -33,15 +33,6 @@ module.exports = function (grunt) {
           "dist/css/scroll.css": "sass/index.scss",
         },
       },
-      // min: {
-      //   options: {
-      //     outputStyle: 'compressed',
-      //     sourceMap: false
-      //   },
-      //   files: {
-      //     'dist/css/scroll.min.css': 'sass/index.scss'
-      //   }
-      // }
     },
     uglify: {
       options: {
