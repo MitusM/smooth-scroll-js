@@ -149,11 +149,10 @@
   }
 
   let size = new Sizes()
-  let viewportHeight = size.getViewportAndElementSizes().view.height
-  let heightBody = size.getViewportAndElementSizes().size.height
+  let viewportHeight = size.view.height
+  let heightBody = size.size.height
+  console.log('heightBody', heightBody)
   let positionTopClient = heightBody - viewportHeight
-  let getBoundingClientRect = (el) => el.getBoundingClientRect()
-
   let getHeaderHeight = function (header) {
     return !header ? 0 : (Sizes().getHeight(header) + header.offsetTop)
   }
@@ -401,7 +400,7 @@
       return element.hash !== ''
     }).map(elem => {
       let block = qerySelector(elem.hash)
-      let rect = getBoundingClientRect(block)
+      let rect = block.getBoundingClientRect()
       return {
         top: floor(rect.top),
         bottom: floor(rect.bottom),
@@ -606,7 +605,7 @@
       let init = initArguments(settings, fn)
       let arr = isArray(selector) ? selector : $$(selector)
       let positions = arr.map(elem => {
-        let rect = getBoundingClientRect(elem)
+        let rect = elem.getBoundingClientRect()
         return {
           top: floor(rect.top),
           bottom: floor(rect.bottom),

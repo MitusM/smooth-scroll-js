@@ -9,6 +9,7 @@
       return new Sizes()
     }
     this.view = this.getViewportAndElementSizes().view
+    this.size = this.getViewportAndElementSizes().size
   }
 
   Sizes.prototype = {

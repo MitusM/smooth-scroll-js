@@ -52,6 +52,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }
 
         this.view = this.getViewportAndElementSizes().view;
+        this.size = this.getViewportAndElementSizes().size;
       }
 
       Sizes.prototype = {
@@ -242,13 +243,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       };
 
       var size = new Sizes();
-      var viewportHeight = size.getViewportAndElementSizes().view.height;
-      var heightBody = size.getViewportAndElementSizes().size.height;
+      var viewportHeight = size.view.height;
+      var heightBody = size.size.height;
+      console.log('heightBody', heightBody);
       var positionTopClient = heightBody - viewportHeight;
-
-      var getBoundingClientRect = function getBoundingClientRect(el) {
-        return el.getBoundingClientRect();
-      };
 
       var getHeaderHeight = function getHeaderHeight(header) {
         return !header ? 0 : Sizes().getHeight(header) + header.offsetTop;
@@ -509,7 +507,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           return element.hash !== '';
         }).map(function (elem) {
           var block = qerySelector(elem.hash);
-          var rect = getBoundingClientRect(block);
+          var rect = block.getBoundingClientRect();
           return {
             top: floor(rect.top),
             bottom: floor(rect.bottom),
@@ -743,7 +741,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             var init = initArguments(settings, fn);
             var arr = isArray(selector) ? selector : $$(selector);
             var positions = arr.map(function (elem) {
-              var rect = getBoundingClientRect(elem);
+              var rect = elem.getBoundingClientRect();
               return {
                 top: floor(rect.top),
                 bottom: floor(rect.bottom),
