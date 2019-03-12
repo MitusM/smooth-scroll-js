@@ -40,9 +40,72 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
   return r;
 })()({
   1: [function (require, module, exports) {
+    /* global define, exports, module */
+    (function () {
+      var docElement = document.documentElement;
+      var body = document.body;
+      var max = Math.max;
+
+      function Sizes() {
+        if (!(this instanceof Sizes)) {
+          return new Sizes();
+        }
+
+        this.view = this.getViewportAndElementSizes().view;
+      }
+
+      Sizes.prototype = {
+        isRootContainer: function isRootContainer(el) {
+          return el === docElement || el === body;
+        },
+        getHeight: function getHeight(el) {
+          return max(el.scrollHeight, el.clientHeight, el.offsetHeight);
+        },
+        getWidth: function getWidth(el) {
+          return max(el.scrollWidth, el.clientWidth, el.offsetWidth);
+        },
+        getSize: function getSize(el) {
+          return {
+            width: this.getWidth(el),
+            height: this.getHeight(el)
+          };
+        },
+        getViewportAndElementSizes: function getViewportAndElementSizes() {
+          var el = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : body;
+          var isRoot = this.isRootContainer(el);
+          return {
+            view: {
+              width: isRoot ? Math.min(window.innerWidth, docElement.clientWidth) : el.clientWidth,
+              height: isRoot ? window.innerHeight : el.clientHeight
+            },
+            size: isRoot ? {
+              width: max(this.getWidth(body), this.getWidth(docElement)),
+              height: max(this.getHeight(body), this.getHeight(docElement))
+            } : this.getSize(el)
+          };
+        },
+        destroy: function destroy() {}
+      };
+      window.Sizes = Sizes;
+
+      if (typeof define === 'function' && define.amd) {
+        define('Sizes', [], function () {
+          return Sizes;
+        });
+      } else if (typeof exports !== 'undefined' && !exports.nodeType) {
+        if (typeof module !== 'undefined' && !module.nodeType && module.exports) {
+          // eslint-disable-next-line no-global-assign
+          exports = module.exports = Sizes;
+        }
+
+        exports.default = Sizes;
+      }
+    })();
     /* eslint-disable no-console */
 
-    /* global exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError*/
+    /* global exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError, Sizes*/
+
+
     (function () {
       'use strict';
 
@@ -178,50 +241,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         return '#' + result;
       };
 
-      var isRootContainer = function isRootContainer(el) {
-        return el === docElement || el === body;
-      };
-
-      var getHeight = function getHeight(el) {
-        return max(el.scrollHeight, el.clientHeight, el.offsetHeight);
-      };
-
-      var getWidth = function getWidth(el) {
-        return max(el.scrollWidth, el.clientWidth, el.offsetWidth);
-      };
-
-      var getSize = function getSize(el) {
-        return {
-          width: getWidth(el),
-          height: getHeight(el)
-        };
-      };
-
-      var getViewportAndElementSizes = function getViewportAndElementSizes() {
-        var el = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : body;
-        var isRoot = isRootContainer(el);
-        return {
-          view: {
-            width: isRoot ? min(win.innerWidth, docElement.clientWidth) : el.clientWidth,
-            height: isRoot ? win.innerHeight : el.clientHeight
-          },
-          size: isRoot ? {
-            width: max(getWidth(body), getWidth(docElement)),
-            height: max(getHeight(body), getHeight(docElement))
-          } : getSize(el)
-        };
-      };
+      var size = new Sizes();
+      var viewportHeight = size.getViewportAndElementSizes().view.height;
+      var heightBody = size.getViewportAndElementSizes().size.height;
+      var positionTopClient = heightBody - viewportHeight;
 
       var getBoundingClientRect = function getBoundingClientRect(el) {
         return el.getBoundingClientRect();
       };
 
-      var viewportHeight = getViewportAndElementSizes().view.height;
-      var heightBody = getViewportAndElementSizes().size.height;
-      var positionTopClient = heightBody - viewportHeight;
-
       var getHeaderHeight = function getHeaderHeight(header) {
-        return !header ? 0 : getHeight(header) + header.offsetTop;
+        return !header ? 0 : Sizes().getHeight(header) + header.offsetTop;
       };
 
       var getEasing = function getEasing(settings, time) {
@@ -564,6 +594,20 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
         _createClass(Scroll, [{
           key: "to",
+          // /**
+          //  * Размеры просматриваемой области page
+          //  * @returns {number}
+          //  */
+          // get viewPort() {
+          //   return size.getViewportAndElementSizes().view
+          // }
+          // /**
+          //  * размер страницы
+          //  * @returns {number}
+          //  */
+          // get page() {
+          //   return size.getViewportAndElementSizes().size
+          // }
 
           /**
            * Scrolls the element until it's scroll properties match the coordinates provided.
@@ -763,36 +807,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             return this;
           }
         }, {
-          key: "infinite",
-          value: function infinite(settings, fn) {
-            var currentPosition = win.pageXOffset;
-            var pageBottom = viewportHeight + currentPosition;
-            console.log("pageBottom", pageBottom);
-          }
-        }, {
           key: "scrollPosition",
           get: function get() {
             return body.scrollTop || docElement.scrollTop;
-          }
-          /**
-           * Размеры просматриваемой области page
-           * @returns {number}
-           */
-
-        }, {
-          key: "viewPort",
-          get: function get() {
-            return getViewportAndElementSizes().view;
-          }
-          /**
-           * размер страницы
-           * @returns {number}
-           */
-
-        }, {
-          key: "page",
-          get: function get() {
-            return getViewportAndElementSizes().size;
           }
         }]);
 

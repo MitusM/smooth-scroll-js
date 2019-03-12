@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-/* global exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError*/
+/* global exports, define, module, history, cancelAnimationFrame, CustomEvent, InvalidCharacterError, Sizes*/
 (function () {
   'use strict'
 
@@ -148,48 +148,14 @@
     return '#' + result
   }
 
-  let isRootContainer = function (el) {
-    return (el === docElement || el === body)
-  }
-
-  let getHeight = function (el) {
-    return (max(el.scrollHeight, el.clientHeight, el.offsetHeight))
-  }
-
-  let getWidth = function (el) {
-    return (max(el.scrollWidth, el.clientWidth, el.offsetWidth))
-  }
-
-  let getSize = function (el) {
-    return ({
-      width: getWidth(el),
-      height: getHeight(el)
-    })
-  }
-
-  let getViewportAndElementSizes = function (el = body) {
-    var isRoot = isRootContainer(el)
-    return {
-      view: {
-        width: isRoot ?
-          min(win.innerWidth, docElement.clientWidth) : el.clientWidth,
-        height: isRoot ?
-          win.innerHeight : el.clientHeight
-      },
-      size: isRoot ? {
-        width: max(getWidth(body), getWidth(docElement)),
-        height: max(getHeight(body), getHeight(docElement))
-      } : getSize(el)
-    }
-  }
-
-  let viewportHeight = getViewportAndElementSizes().view.height
-  let heightBody = getViewportAndElementSizes().size.height
+  let size = new Sizes()
+  let viewportHeight = size.getViewportAndElementSizes().view.height
+  let heightBody = size.getViewportAndElementSizes().size.height
   let positionTopClient = heightBody - viewportHeight
   let getBoundingClientRect = (el) => el.getBoundingClientRect()
 
   let getHeaderHeight = function (header) {
-    return !header ? 0 : (getHeight(header) + header.offsetTop)
+    return !header ? 0 : (Sizes().getHeight(header) + header.offsetTop)
   }
 
   let getEasing = function (settings, time) {
@@ -512,21 +478,21 @@
       return body.scrollTop || docElement.scrollTop
     }
 
-    /**
-     * Размеры просматриваемой области page
-     * @returns {number}
-     */
-    get viewPort() {
-      return getViewportAndElementSizes().view
-    }
+    // /**
+    //  * Размеры просматриваемой области page
+    //  * @returns {number}
+    //  */
+    // get viewPort() {
+    //   return size.getViewportAndElementSizes().view
+    // }
 
-    /**
-     * размер страницы
-     * @returns {number}
-     */
-    get page() {
-      return getViewportAndElementSizes().size
-    }
+    // /**
+    //  * размер страницы
+    //  * @returns {number}
+    //  */
+    // get page() {
+    //   return size.getViewportAndElementSizes().size
+    // }
 
     /**
      * Scrolls the element until it's scroll properties match the coordinates provided.

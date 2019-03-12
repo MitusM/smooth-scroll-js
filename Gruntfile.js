@@ -6,7 +6,7 @@ module.exports = function (grunt) {
     browserify: {
       dist: {
         files: {
-          "temp/index.js": ["src/index.js"],
+          "temp/browserify-index.js": ["temp/index.js"],
         },
       },
     },
@@ -17,8 +17,23 @@ module.exports = function (grunt) {
       },
       dist: {
         files: {
-          "dist/scroll.js": ["temp/index.js"],
+          "dist/scroll.js": ["temp/browserify-index.js"],
         },
+      },
+    },
+    concat: {
+      options: {
+        separator: ";",
+      },
+      temp: {
+        options: {
+          sourceMap: false,
+        },
+        src: [
+          "src/sizes.js",
+          "src/index.js"
+        ],
+        dest: "temp/index.js",
       },
     },
     sass: {
@@ -124,8 +139,9 @@ module.exports = function (grunt) {
     },
   };
   grunt.initConfig(config);
-  grunt.registerTask("default", ["babel"]); // "concat:temp",
+  grunt.registerTask("default", ["babel"]); // 
   grunt.registerTask("js_compile", [
+    "concat:temp",
     "browserify:dist",
     "babel:dist",
     "uglify:dist",
